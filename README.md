@@ -1,14 +1,14 @@
 # GitHub Copilot Analytics Dashboard
 
-Dashboard de análisis de GitHub Copilot Premium Requests con **validación automática de duplicados**, backend .NET 8, frontend React con sistema de diseño INEGI, y despliegue en contenedores Podman.
+Dashboard de análisis de GitHub Copilot Premium Requests con **validación automática de duplicados**, backend .NET 8, frontend React + TypeScript, y despliegue en contenedores Podman.
 
 ## 🌟 Características
 
 ✅ **Backend .NET 8** con Entity Framework Core + SQLite  
 ✅ **Validación automática de duplicados** al importar CSVs  
-✅ **Frontend React 18** con librería de componentes INEGI  
-✅ **Apache ECharts** integrado con design tokens INEGI  
-✅ **Sistema de diseño INEGI** estricto (cero hardcoding)  
+✅ **Frontend React 18 + TypeScript** con Vite  
+✅ **Apache ECharts** para visualizaciones interactivas  
+✅ **styled-components** para estilos en componentes  
 ✅ **Contenedores Podman** optimizados  
 ✅ **API REST** documentada con Swagger  
 ✅ **Dashboard interactivo** con filtros y visualizaciones  
@@ -33,9 +33,6 @@ podman-compose --version
 ### Iniciar la aplicación
 
 ```powershell
-# En el directorio app/
-cd app
-
 # Dar permisos de ejecución (Git Bash o WSL)
 chmod +x *.sh
 
@@ -55,7 +52,6 @@ podman-compose up -d --build
 ## 📁 Estructura del Proyecto
 
 ```
-app/
 ├── backend/              # API .NET 8
 │   ├── GitHubCopilotAPI/
 │   │   ├── Controllers/
@@ -64,17 +60,16 @@ app/
 │   │   ├── Services/
 │   │   └── Program.cs
 │   └── Dockerfile
-├── frontend/             # React + Vite
+├── frontend/             # React + Vite + TypeScript
 │   ├── src/
 │   │   ├── components/
 │   │   ├── services/
 │   │   ├── context/
 │   │   └── utils/
 │   ├── Dockerfile
-│   └── .npmrc
+│   └── vite.config.ts
 ├── data/                 # SQLite (persiste entre reinicios)
-├── compose.yaml
-└── *.sh                  # Scripts de gestión
+└── compose.yaml
 ```
 
 ## 🔄 Validación de Duplicados
@@ -112,44 +107,6 @@ Un registro se considera duplicado si coinciden:
 }
 ```
 
-## 🎨 Sistema de Diseño INEGI
-
-El frontend sigue **estrictamente** el sistema de diseño INEGI:
-
-### Librería de Componentes
-```bash
-# Registry interno INEGI (10.153.10.88)
-@reactjscomponentrepository/components
-```
-
-### Componentes Usados
-- `Button`, `Card`, `Badge`, `Input`, `Select`, `Table`
-- `ThemeProvider`, `GlobalStyle`
-- Design tokens: `colors`, `spacing`, `typography`, `shadows`
-
-### Apache ECharts + Tema INEGI
-Las gráficas usan un tema personalizado que mapea tokens INEGI:
-
-```jsx
-import { createEchartsTheme } from './utils/echartsTheme'
-
-const theme = useTheme()
-const echartsTheme = createEchartsTheme(theme)
-
-<Chart option={{ ...echartsTheme, ...myData }} />
-```
-
-### Cero Hardcoding
-```jsx
-// ❌ PROHIBIDO
-color: '#3b82f6'
-padding: '16px'
-
-// ✅ OBLIGATORIO
-color: ${({ theme }) => theme.colors.primary.main}
-padding: ${({ theme }) => theme.spacing.md}
-```
-
 ## 📊 Uso de la Aplicación
 
 ### Primer Uso
@@ -178,8 +135,8 @@ date,username,product,sku,model,quantity,...
 **B) Teams CSV** (equipos internos):
 ```
 nombre,usuario,correo
-Juan Pérez,juan.perez,juan.perez@inegi.org.mx
-María López,maria.lopez,maria.lopez@inegi.org.mx
+Juan Pérez,juan.perez,juan.perez@correo.com
+María López,maria.lopez,maria.lopez@correo.com
 ```
 
 ### Importar Datos
@@ -213,10 +170,7 @@ Esto asocia usuarios a equipos para análisis por área.
 
 #### Importación Múltiple
 
-Puedes importar CSVs múltiples veces:
-- ✅ El sistema **automáticamente** detecta duplicados
-- ✅ No necesitas limpiar datos manualmente
-- ✅ Puedes subir el mismo archivo sin problemas
+Puedes importar CSVs múltiples veces — el sistema detecta duplicados automáticamente, sin necesidad de limpiar datos antes de volver a subir.
 
 ### Visualizar Métricas
 
@@ -238,25 +192,19 @@ En la parte superior verás 4 tarjetas con:
 - 🔵 USO MODERADO (40-70%) — 120-209 requests
 - 🟢 USO ALTO (>70%) — 210+ requests
 
-**Comparación de Equipos** — Barras agrupadas: usuarios activos, requests totales y costo por equipo. Útil para comparar adopción entre áreas.
+**Comparación de Equipos** — Barras agrupadas: usuarios activos, requests totales y costo por equipo.
 
 **Uso por Modelo de IA** — Pie chart: distribución de requests por modelo (GPT-4, Claude, etc.).
 
 #### Tabla de Usuarios
 
-La tabla inferior muestra usuario, requests, días activos, % de uso, categoría y costo total. Soporta ordenamiento por columna y badges de color por categoría.
+Muestra usuario, requests, días activos, % de uso, categoría y costo total. Soporta ordenamiento por columna y badges de color por categoría.
 
 ### Filtrar y Analizar
 
-#### Por Usuario
-1. Usar selector de usuario (búsqueda)
-2. Ver timeline detallado de uso
-3. Ver desglose de modelos utilizados
+**Por Usuario**: selector con búsqueda → timeline detallado → desglose de modelos utilizados.
 
-#### Por Equipo
-- Comparar IKTAN, SIA, SSPTIC
-- Ver usuarios activos vs con bajo uso
-- Identificar licencias a remover
+**Por Equipo**: compara equipos, identifica usuarios activos vs bajo uso y licencias a remover.
 
 ## 🛠️ Comandos Disponibles
 
@@ -322,52 +270,30 @@ cp ./data/backup_YYYYMMDD_HHMMSS.db ./data/copilot.db
 ### Limpiar datos
 
 ```bash
-# Detener servicios
 ./podman-stop.sh
-
-# Eliminar base de datos
 rm ./data/copilot.db
-
-# Reiniciar (se crea BD nueva)
-./podman-start.sh
+./podman-start.sh   # Se crea una BD nueva vacía
 ```
 
 ## 🗄️ Gestión de Datos (API)
 
-### Ver Estadísticas de BD
-
 ```bash
+# Ver estadísticas de BD
 curl http://localhost:5000/api/datamanagement/stats
-```
 
-### Eliminar Periodo
-
-```bash
+# Eliminar registros de un periodo
 curl -X DELETE "http://localhost:5000/api/datamanagement/period?startDate=2024-01-01&endDate=2024-01-31"
-```
 
-### Remover Duplicados Manualmente
-
-```bash
+# Remover duplicados manualmente
 curl -X POST http://localhost:5000/api/datamanagement/deduplicate
-```
 
-### Exportar a CSV
-
-```bash
+# Exportar a CSV
 curl http://localhost:5000/api/datamanagement/export -o export.csv
 ```
 
 ## 🔧 Configuración
 
-### Variables de Entorno
-Editar `.env` para cambiar puertos o configuraciones.
-
-### Acceso a GitLab Registry Interno
-El frontend requiere acceso al GitLab interno de INEGI:
-- **Registry**: http://10.153.10.88/api/v4/projects/1127/packages/npm/
-- **Acceso**: Solo desde red corporativa INEGI
-- **Configuración**: Ver `frontend/.npmrc`
+Editar `.env` para cambiar puertos u otras configuraciones.
 
 ## 📡 API Endpoints
 
@@ -394,31 +320,22 @@ El frontend requiere acceso al GitLab interno de INEGI:
 
 ### Backend no responde
 
-**Síntoma**: Frontend muestra "Error loading data"
-
 ```bash
-# Ver logs
 ./podman-logs.sh backend
-
-# Verificar health
 curl http://localhost:5000/health
-
-# Reiniciar solo backend
 podman-compose restart backend
 ```
 
-### Frontend no carga / INEGI components not found
-
-**Causa**: Sin acceso a red corporativa INEGI (10.153.10.88)
+### Frontend no carga
 
 ```bash
-# Verificar conexión
-ping 10.153.10.88
+./podman-logs.sh frontend
+curl http://localhost:5000/api/metrics/summary
+```
 
-# Verificar .npmrc
-cat frontend/.npmrc
+### Error al instalar dependencias del frontend
 
-# Reinstalar desde red corporativa
+```bash
 cd frontend
 rm -rf node_modules package-lock.json
 npm install
@@ -426,10 +343,10 @@ npm install
 
 ### Error al subir CSV
 
-**Causas posibles**: archivo no válido, faltan columnas requeridas, codificación incorrecta.
+Causas posibles: archivo no válido, faltan columnas requeridas, codificación incorrecta (debe ser UTF-8).
 
 ```bash
-# Verificar encoding (debe ser UTF-8)
+# Verificar encoding
 file -i archivo.csv
 
 # Convertir si es necesario
@@ -439,14 +356,10 @@ iconv -f ISO-8859-1 -t UTF-8 archivo.csv > archivo_utf8.csv
 ### Database is locked
 
 ```bash
-# Detener todo
 podman-compose down
-
 # Verificar procesos usando la BD
-lsof data/copilot.db          # Linux/Mac
-Get-Process | Where-Object {$_.Path -like "*copilot.db*"}  # PowerShell
-
-# Reiniciar
+lsof data/copilot.db                                              # Linux/Mac
+Get-Process | Where-Object {$_.Path -like "*copilot.db*"}         # PowerShell
 podman-compose up -d
 ```
 
@@ -471,7 +384,7 @@ sqlite3 data/copilot.db ".indexes premium_requests"
 # Esperado: IX_PremiumRequests_Date, _Username, _Model, _DuplicateCheck
 ```
 
-3. Limpiar contenedores y reconstruir:
+3. Reconstruir contenedores:
 ```bash
 ./podman-rebuild.sh
 ```
@@ -479,12 +392,9 @@ sqlite3 data/copilot.db ".indexes premium_requests"
 ### Frontend muestra datos desactualizados
 
 ```bash
-# Forzar recarga
-Ctrl+Shift+R  # Windows/Linux
-Cmd+Shift+R   # Mac
-
-# Verificar que backend tiene los datos
-curl http://localhost:5000/api/metrics/summary
+# Forzar recarga del navegador
+Ctrl+Shift+R   # Windows/Linux
+Cmd+Shift+R    # Mac
 ```
 
 ### Reinicio completo
@@ -497,25 +407,18 @@ rm ./data/copilot.db
 
 ## 🎯 Equipos Monitoreados
 
-| Equipo | Usuarios | CSV |
-|--------|----------|-----|
-| IKTAN | 45 | `teams/iktan.csv` |
-| SIA | 8 | `teams/sia.csv` |
-| SSPTIC | 9 | `teams/ssptic.csv` |
-| Vibe_Coding | Variable | `teams/Vibe_Coding.csv` |
+| Equipo | CSV |
+|--------|-----|
+| IKTAN | `teams/iktan.csv` |
+| SIA | `teams/sia.csv` |
+| SSPTIC | `teams/ssptic.csv` |
+| Vibe_Coding | `teams/Vibe_Coding.csv` |
 
 ## 📚 Documentación Adicional
 
 - **Swagger**: http://localhost:5000/swagger
-- **Plan de implementación**: Ver `/memories/session/plan.md`
-- **Sistema de diseño INEGI**: Ver `.github/` en librería de componentes
 
 ## 📝 Licencia
 
-© 2026 INEGI - Instituto Nacional de Estadística y Geografía
-
----
-
-**Desarrollado por**: Equipo SSPTIC INEGI  
-**Versión**: 1.0.0  
-**Fecha**: Mayo 2026
+© 2026 - Equipo SSPTIC  
+**Versión**: 2.0.0
