@@ -1,8 +1,8 @@
 export const theme = {
   colors: {
-    // ── Marca INEGI ──────────────────────────────────────────────────
-    primary:       '#0077C8', // azul primario INEGI (light-primary-brand-color)
-    primaryDark:   '#003057', // azul oscuro INEGI  (dark-primary-brand-color)
+    // ── Colores principales ───────────────────────────────────────────
+    primary:       '#0077C8', // azul primario
+    primaryDark:   '#003057', // azul oscuro
     primaryLight:  '#EBF5FF', // fondo hover / estados activos leves
 
     // ── Secundarios ──────────────────────────────────────────────────
@@ -52,7 +52,7 @@ export const theme = {
 
   borderRadius: {
     sm:   '0.125rem', //  2px (botón DS: 4px → md)
-    md:   '0.25rem',  //  4px — botones y controles INEGI DS
+    md:   '0.25rem',  //  4px — botones y controles
     lg:   '0.5rem',   //  8px — paneles / cards DS
     xl:   '0.75rem',  // 12px — cards grandes
     full: '9999px',

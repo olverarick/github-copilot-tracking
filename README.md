@@ -405,14 +405,6 @@ rm ./data/copilot.db
 ./podman-rebuild.sh
 ```
 
-## 🎯 Equipos Monitoreados
-
-| Equipo | CSV |
-|--------|-----|
-| IKTAN | `teams/iktan.csv` |
-| SIA | `teams/sia.csv` |
-| SSPTIC | `teams/ssptic.csv` |
-| Vibe_Coding | `teams/Vibe_Coding.csv` |
 
 ## 📚 Documentación Adicional
 
@@ -420,5 +412,5 @@ rm ./data/copilot.db
 
 ## 📝 Licencia
 
-© 2026 - Equipo SSPTIC  
+© 2026 - Ricardo Olver  
 **Versión**: 2.0.0

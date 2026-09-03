@@ -1,16 +1,16 @@
 /**
- * Utilitario para crear tema de ECharts usando design tokens de INEGI
+ * Utilitario para crear tema de ECharts usando design tokens del sistema
  * 
- * IMPORTANTE: Este archivo mapea los tokens del sistema de diseño INEGI
+ * IMPORTANTE: Este archivo mapea los tokens del sistema de diseño
  * a las propiedades de configuración de Apache ECharts.
  * 
  * NO usar valores hardcodeados. Siempre referenciar tokens del tema.
  */
 
 export const createEchartsTheme = (theme) => {
-  // Verificar que tenemos acceso al tema INEGI
+  // Verificar que tenemos acceso al tema
   if (!theme || !theme.colors) {
-    console.warn('⚠️ Tema INEGI no disponible, usando fallback');
+    console.warn('⚠️ Tema no disponible, usando fallback');
     return {};
   }
 
@@ -406,7 +406,7 @@ export const createEchartsTheme = (theme) => {
 };
 
 /**
- * Mapeo de categorías de uso a colores del tema INEGI
+ * Mapeo de categorías de uso a colores del tema
  */
 export const getCategoryColor = (category, theme) => {
   if (!theme || !theme.colors) {

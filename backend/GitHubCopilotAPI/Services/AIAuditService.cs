@@ -269,7 +269,7 @@ public class AIAuditService(IConfiguration config, IMemoryCache cache, ILogger<A
     private const string AuditSystemPrompt =
         """
         Eres un auditor experto en calidad de documentación técnica y buenas prácticas de desarrollo de software.
-        Evalúa documentos de casos de uso de GitHub Copilot escritos por desarrolladores del INEGI (México).
+        Evalúa documentos de casos de uso de GitHub Copilot escritos por desarrolladores.
 
         RÚBRICA — score = suma de criterios verdaderos (0–5 por archivo):
 

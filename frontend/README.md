@@ -1,73 +1,47 @@
-# Frontend - GitHub Copilot Analytics
+# GitHub Copilot Analytics — Frontend
 
-Frontend de la aplicación de análisis de GitHub Copilot Premium Requests.
+Frontend React 18 + TypeScript + Vite para el dashboard de análisis de GitHub Copilot Premium Requests.
 
-## Tecnologías
+## 🛠️ Stack
 
-- ⚛️ React 18
-- ⚡ Vite
-- 🎨 Librería de componentes INEGI (`@reactjscomponentrepository/components`)
-- 📊 Apache ECharts
-- 💅 Styled Components
+- **React 18** + **TypeScript**
+- **Vite** como bundler
+- **styled-components** para estilos
+- **Apache ECharts** (echarts-for-react) para gráficas
+- **@xyflow/react** para diagramas de flujo
+- **date-fns** para manejo de fechas
 
-## Desarrollo Local
+## 🚀 Desarrollo local
 
 ```bash
-# Instalar dependencias
 npm install
-
-# Iniciar servidor de desarrollo
 npm run dev
+# Dev server en http://localhost:5173
+```
 
-# Build para producción
+## 🏗️ Build
+
+```bash
 npm run build
+npm run preview
 ```
 
-## Configuración
+## 🔍 Type checking
 
-### Registry npm Interno INEGI
-
-El proyecto usa la librería de componentes INEGI alojada en el GitLab interno.
-
-**.npmrc**:
-```
-@reactjscomponentrepository:registry=http://10.153.10.88/api/v4/projects/1127/packages/npm/
+```bash
+npm run typecheck
 ```
 
-⚠️ **Nota**: Solo accesible desde red corporativa INEGI.
-
-## Sistema de Diseño
-
-El frontend sigue estrictamente el sistema de diseño INEGI:
-
-- ✅ Cero hardcoding de estilos
-- ✅ Uso exclusivo de design tokens
-- ✅ Componentes base de la librería INEGI
-- ✅ ForwardRef en componentes personalizados
-- ✅ Accesibilidad WCAG AA
-
-## Estructura
+## 📁 Estructura
 
 ```
-frontend/
-├── src/
-│   ├── components/
-│   │   ├── Charts/          # Gráficas ECharts
-│   │   ├── Dashboard/       # KPIs y métricas
-│   │   ├── Tables/          # Tablas de datos
-│   │   ├── Filters/         # Filtros de búsqueda
-│   │   └── DataUploader/    # Carga de CSVs
-│   ├── services/
-│   │   └── api.js          # Cliente API
-│   ├── context/
-│   │   └── DataContext.jsx # Estado global
-│   ├── utils/
-│   │   ├── echartsTheme.js # Tema ECharts con tokens INEGI
-│   │   └── usageColors.js  # Colores para categorías
-│   ├── App.jsx
-│   └── main.jsx
-├── public/
-├── index.html
-├── package.json
-└── vite.config.js
+src/
+├── components/    # Componentes reutilizables
+├── services/      # Llamadas a la API
+├── context/       # Estado global (Context API)
+└── utils/         # Helpers (echartsTheme, formatters...)
 ```
+
+## 🔌 Conexión con el backend
+
+El frontend consume la API en `http://localhost:5000`. Configurable en `.env`.

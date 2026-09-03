@@ -22,7 +22,7 @@ import type { UserMetrics } from './types';
 
 const HEADER_H  = 48;
 const SIDEBAR_W = 200;
-const INST_BLUE = '#003057'; // INEGI dark-primary-brand-color
+const INST_BLUE = '#003057'; // dark primary brand color
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

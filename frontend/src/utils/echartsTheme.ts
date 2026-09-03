@@ -3,7 +3,7 @@ import { DefaultTheme } from 'styled-components';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createEchartsTheme = (theme: DefaultTheme): Record<string, any> => {
   if (!theme?.colors) {
-    console.warn('⚠️ Tema INEGI no disponible');
+    console.warn('⚠️ Tema no disponible');
     return {};
   }
   const c = theme.colors;

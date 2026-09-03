@@ -15,7 +15,7 @@ public class UserLicense
     public int Id { get; set; }
 
     /// <summary>
-    /// Nombre de usuario (ej: daniel-barba_inegi)
+    /// Nombre de usuario de GitHub (ej: daniel.barba)
     /// </summary>
     [Required]
     [MaxLength(100)]
