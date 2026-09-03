@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+**/out/
+**/.vs/
+**/.vscode/
+*.db
+*.db-shm
+*.db-wal
+.git
+.gitignore
+README.md
+*.user
+*.suo

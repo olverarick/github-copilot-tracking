@@ -1,0 +1,7 @@
+# Copia este archivo como .npmrc y reemplaza el token con el tuyo
+# El token se obtiene en: GitLab interno → User Settings → Access Tokens
+#
+# NUNCA subas el .npmrc real (con token) a Git
+
+@reactjscomponentrepository:registry=http://10.153.10.88/api/v4/projects/1127/packages/npm/
+//10.153.10.88/api/v4/projects/1127/packages/npm/:_authToken=REEMPLAZAR_CON_TU_TOKEN_GITLAB

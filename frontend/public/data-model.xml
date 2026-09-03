@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  MODELO DE DATOS — GitHub Copilot Tracking App
+  ─────────────────────────────────────────────
+  Para actualizar el diagrama edita este archivo y recarga el browser.
+  NO se requiere rebuild del frontend.
+
+  Atributos de <entity>:
+    id        — identificador único (snake_case)
+    label     — nombre de la tabla en la base de datos
+    x, y      — posición del nodo en el canvas (px, esquina superior-izquierda)
+    color     — color del header del nodo (#RRGGBB)
+
+  Atributos de <field>:
+    name        — nombre de la columna
+    type        — tipo SQL
+    pk          — "true" si es clave primaria
+    unique      — "true" si tiene restricción UNIQUE
+    required    — "true" si es NOT NULL / requerido
+    description — texto explicativo visible en el panel de propiedades
+
+  Atributos de <relation>:
+    from, fromField  — entidad y campo de origen
+    to,   toField    — entidad y campo de destino
+    cardinality      — multiplicidad (0..*, 1, 0..1, etc.)
+    label            — etiqueta sobre la flecha
+-->
+<datamodel version="1.0">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       ENTIDADES
+       ═══════════════════════════════════════════════════════════════════════ -->
+
+  <entity id="premium_requests" label="premium_requests" x="30" y="30" color="#FDEBD0">
+    <description>Registros de consumo de GitHub Copilot Premium Requests importados desde los CSV de GitHub. Cada fila representa una solicitud de un modelo de IA en una fecha determinada con su costo asociado.</description>
+    <field name="id"                     type="INTEGER"        pk="true"                           description="Clave primaria autoincremental"/>
+    <field name="date"                   type="DATETIME"       required="true"                     description="Fecha de uso del modelo IA"/>
+    <field name="username"               type="VARCHAR(255)"   required="true"                     description="Username de GitHub — referencia lógica a users.usuario"/>
+    <field name="product"                type="VARCHAR(100)"                                       description="Nombre del producto (ej: GitHub Copilot)"/>
+    <field name="sku"                    type="VARCHAR(100)"                                       description="Identificador de SKU del servicio contratado"/>
+    <field name="model"                  type="VARCHAR(255)"   required="true"                     description="Modelo de IA utilizado (ej: gpt-4o, claude-3.5-sonnet)"/>
+    <field name="quantity"               type="DECIMAL"                                            description="Número de requests consumidos en la operación"/>
+    <field name="unit_type"              type="VARCHAR(50)"                                        description="Tipo de unidad de medida del consumo"/>
+    <field name="applied_cost_per_qty"   type="DECIMAL(18,4)"                                     description="Costo aplicado por unidad de request según tarifa"/>
+    <field name="gross_amount"           type="DECIMAL(18,4)"                                     description="Monto bruto antes de aplicar descuentos"/>
+    <field name="discount_amount"        type="DECIMAL(18,4)"                                     description="Monto total de descuento aplicado"/>
+    <field name="net_amount"             type="DECIMAL(18,4)"                                     description="Monto neto facturado (gross_amount − discount_amount)"/>
+    <field name="exceeds_quota"          type="VARCHAR(10)"                                       description="Indica si el uso excede la cuota mensual asignada"/>
+    <field name="total_monthly_quota"    type="INTEGER"                                           description="Cuota mensual total de requests asignada al usuario (default: 300)"/>
+    <field name="organization"           type="VARCHAR(255)"                                      description="Nombre de la organización de GitHub"/>
+    <field name="cost_center_name"       type="VARCHAR(255)"                                      description="Centro de costo al que se imputa el consumo"/>
+    <field name="upload_date"            type="DATETIME"                                          description="Fecha y hora UTC en que se importó este registro al sistema"/>
+  </entity>
+
+  <entity id="users" label="users" x="420" y="30" color="#D6EAF8">
+    <description>Catálogo de usuarios con licencia de GitHub Copilot. Cada usuario pertenece a un equipo y puede tener múltiples asignaciones de licencia en distintos períodos mensuales.</description>
+    <field name="id"         type="INTEGER"      pk="true"                                        description="Clave primaria autoincremental"/>
+    <field name="usuario"    type="VARCHAR(255)" unique="true" required="true"                    description="Username de GitHub — clave de negocio única del usuario"/>
+    <field name="nombre"     type="VARCHAR(255)"                                                  description="Nombre completo del colaborador"/>
+    <field name="correo"     type="VARCHAR(255)"                                                  description="Correo institucional del colaborador"/>
+    <field name="equipo"     type="VARCHAR(100)" required="true"                                  description="Nombre del equipo al que pertenece (ej: IKTAN, SIA, SSPTIC)"/>
+    <field name="created_at" type="DATETIME"                                                      description="Fecha y hora UTC de registro inicial en el sistema"/>
+  </entity>
+
+  <entity id="user_licenses" label="user_licenses" x="420" y="310" color="#D6EAF8">
+    <description>Asignación de licencias de GitHub Copilot por usuario y período mensual. Permite auditoría histórica de cambios y protege ediciones manuales contra re-importaciones de CSV.</description>
+    <field name="id"          type="INTEGER"      pk="true"                                       description="Clave primaria autoincremental"/>
+    <field name="usuario"     type="VARCHAR(100)" required="true"                                 description="Username de GitHub — referencia lógica a users.usuario"/>
+    <field name="year"        type="INTEGER"      required="true"                                 description="Año del período de licencia (ej: 2026)"/>
+    <field name="month"       type="INTEGER"      required="true"                                 description="Mes del período (1–12)"/>
+    <field name="has_license" type="BOOLEAN"      required="true"                                 description="true = licencia activa en este período; false = sin licencia"/>
+    <field name="modified_by" type="VARCHAR(50)"                                                  description="Origen del cambio: CSV_IMPORT (carga masiva) o MANUAL (edición en UI)"/>
+    <field name="created_at"  type="DATETIME"                                                     description="Fecha de creación o última modificación del registro"/>
+  </entity>
+
+  <entity id="uploads" label="uploads" x="810" y="30" color="#E8F8F5">
+    <description>Historial de importaciones de archivos CSV realizadas al sistema. Cada registro representa un archivo procesado con sus metadatos de período de datos y volumen de registros.</description>
+    <field name="id"           type="INTEGER"       pk="true"                                     description="Clave primaria autoincremental"/>
+    <field name="filename"     type="VARCHAR(500)"  required="true"                               description="Nombre original del archivo CSV importado"/>
+    <field name="record_count" type="INTEGER"                                                     description="Número de registros de premium_requests procesados en la importación"/>
+    <field name="upload_date"  type="DATETIME"                                                    description="Fecha y hora UTC en que se realizó la importación"/>
+    <field name="period_start" type="DATETIME"                                                    description="Inicio del período de datos contenido en el archivo"/>
+    <field name="period_end"   type="DATETIME"                                                    description="Fin del período de datos contenido en el archivo"/>
+  </entity>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       RELACIONES  (lógicas — SQLite no impone FK constraints)
+       ═══════════════════════════════════════════════════════════════════════ -->
+
+  <relation
+    from="premium_requests" fromField="username"
+    to="users"              toField="usuario"
+    cardinality="0..*"
+    label="pertenece a"
+  />
+
+  <relation
+    from="user_licenses"    fromField="usuario"
+    to="users"              toField="usuario"
+    cardinality="0..*"
+    label="licencia de"
+  />
+
+</datamodel>

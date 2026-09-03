@@ -1,0 +1,61 @@
+# podman-compose up -d
+# Requiere podman-compose >= 1.0.6 para condition: service_healthy
+
+services:
+
+  # ── Backend .NET 8 ──────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: copilot-backend
+    ports:
+      - "${API_PORT:-5001}:5000"
+    volumes:
+      # :U → Podman ajusta la propiedad del directorio host al usuario del
+      # contenedor (appuser uid 1001). Necesario para Podman rootless.
+      - ./data:/app/data:U
+      - ./use-cases:/app/use-cases:U
+    environment:
+      - ASPNETCORE_URLS=http://+:5000
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/copilot.db
+      - CORS__AllowedOrigins=${CORS_ORIGINS}
+      - Jwt__SecretKey=${JWT_SECRET_KEY}
+      - Jwt__AdminInitialPassword=${ADMIN_INITIAL_PASSWORD:-Copilot2025!}
+      - AzureOpenAI__Endpoint=${AZURE_OPENAI_ENDPOINT}
+      - AzureOpenAI__ApiKey=${AZURE_OPENAI_API_KEY}
+      - AzureOpenAI__DeploymentName=${AZURE_OPENAI_DEPLOYMENT:-gpt-4o}
+      # Diagnostico temporal: expone la excepcion real cuando JwtBearer rechaza
+      # un token. Quitar estas dos lineas una vez resuelto el problema de auth.
+      - Logging__LogLevel__Microsoft.AspNetCore.Authentication=Debug
+      - Logging__LogLevel__Microsoft.IdentityModel=Debug
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - copilot-network
+
+  # ── Frontend React / nginx-unprivileged ────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: copilot-frontend
+    ports:
+      # Host 8081 → contenedor 8080 (nginx-unprivileged escucha en 8080)
+      - "${FRONTEND_PORT:-8081}:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - copilot-network
+
+networks:
+  copilot-network:
+    driver: bridge

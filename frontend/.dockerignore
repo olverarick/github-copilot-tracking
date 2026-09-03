@@ -1,0 +1,6 @@
+node_modules
+dist
+build
+# .env  # Permitir .env para builds con configuración específica
+.env.local
+.vite
