@@ -6,8 +6,8 @@ Dashboard de análisis de GitHub Copilot Premium Requests con **validación auto
 
 ✅ **Backend .NET 8** con Entity Framework Core + SQLite  
 ✅ **Validación automática de duplicados** al importar CSVs  
-✅ **Frontend React 18** con librería de componentes INEGI  
-✅ **Apache ECharts** integrado con design tokens INEGI  
+✅ **Frontend React 18** con librería de componentes  
+✅ **Apache ECharts** integrado con design tokens  
 ✅ **Sistema de diseño INEGI** estricto (cero hardcoding)  
 ✅ **Contenedores Podman** optimizados  
 ✅ **API REST** documentada con Swagger  
@@ -112,22 +112,7 @@ Un registro se considera duplicado si coinciden:
 }
 ```
 
-## 🎨 Sistema de Diseño INEGI
-
-El frontend sigue **estrictamente** el sistema de diseño INEGI:
-
-### Librería de Componentes
-```bash
-# Registry interno INEGI (10.153.10.88)
-@reactjscomponentrepository/components
-```
-
-### Componentes Usados
-- `Button`, `Card`, `Badge`, `Input`, `Select`, `Table`
-- `ThemeProvider`, `GlobalStyle`
-- Design tokens: `colors`, `spacing`, `typography`, `shadows`
-
-### Apache ECharts + Tema INEGI
+### Apache ECharts 
 Las gráficas usan un tema personalizado que mapea tokens INEGI:
 
 ```jsx
@@ -139,16 +124,6 @@ const echartsTheme = createEchartsTheme(theme)
 <Chart option={{ ...echartsTheme, ...myData }} />
 ```
 
-### Cero Hardcoding
-```jsx
-// ❌ PROHIBIDO
-color: '#3b82f6'
-padding: '16px'
-
-// ✅ OBLIGATORIO
-color: ${({ theme }) => theme.colors.primary.main}
-padding: ${({ theme }) => theme.spacing.md}
-```
 
 ## 📊 Uso de la Aplicación
 
@@ -252,12 +227,6 @@ rm ./data/copilot.db
 ### Variables de Entorno
 Editar `.env` para cambiar puertos o configuraciones.
 
-### Acceso a GitLab Registry Interno
-El frontend requiere acceso al GitLab interno de INEGI:
-- **Registry**: http://10.153.10.88/api/v4/projects/1127/packages/npm/
-- **Acceso**: Solo desde red corporativa INEGI
-- **Configuración**: Ver `frontend/.npmrc`
-
 ## 📡 API Endpoints
 
 ### Upload
@@ -302,14 +271,6 @@ podman-compose restart backend
 curl http://localhost:5000/api/metrics/summary
 ```
 
-### Error al instalar dependencias
-```bash
-# Verificar acceso a GitLab interno (10.153.10.88)
-ping 10.153.10.88
-
-# Reconstruir sin caché
-./podman-rebuild.sh
-```
 
 ### Base de datos corrupta
 ```bash
@@ -317,15 +278,6 @@ ping 10.153.10.88
 rm ./data/copilot.db
 ./podman-start.sh
 ```
-
-## 🎯 Equipos Monitoreados
-
-| Equipo | Usuarios | CSV |
-|--------|----------|-----|
-| IKTAN | 45 | `teams/iktan.csv` |
-| SIA | 8 | `teams/sia.csv` |
-| SSPTIC | 9 | `teams/ssptic.csv` |
-| Vibe_Coding | Variable | `teams/Vibe_Coding.csv` |
 
 ## 📚 Documentación Adicional
 
@@ -335,10 +287,9 @@ rm ./data/copilot.db
 
 ## 📝 Licencia
 
-© 2026 INEGI - Instituto Nacional de Estadística y Geografía
 
 ---
 
-**Desarrollado por**: Equipo SSPTIC INEGI  
+**Desarrollado por**: Ricardo Olvera
 **Versión**: 1.0.0  
 **Fecha**: Mayo 2026
